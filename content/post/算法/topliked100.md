@@ -1137,3 +1137,53 @@ public:
 };
 ```
 
+##  138-Copy List with Random Pointer 链表
+
+[Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/)
+
+深拷贝链表，关键在于random字段的填充。
+
+采取一个比较简单的思路，第一次遍历用一个map保存**原结点-新结点**的对，然后第二次遍历填充next和random字段。
+
+```c++
+class Node {
+public:
+    int val;
+    Node* next;
+    Node* random;
+
+    Node() {}
+
+    Node(int _val, Node* _next, Node* _random) {
+        val = _val;
+        next = _next;
+        random = _random;
+    }
+};
+
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        unordered_map<Node*, Node*> mm;
+        Node* p = head;
+        while (p)
+        {
+            mm[p] = new Node(p->val, nullptr, nullptr);
+            p = p->next;
+        }
+
+        p = head;
+        while (p){
+            mm[p]->next = mm[p->next];
+            mm[p]->random = mm[p->random];
+            p = p->next;
+        }
+        return mm[head];
+    }
+};
+```
+
+**ps: map用[]访问不到，会插入元素**
+
+
+
