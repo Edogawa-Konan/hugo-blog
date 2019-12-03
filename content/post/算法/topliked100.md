@@ -1185,5 +1185,192 @@ public:
 
 **ps: map用[]访问不到，会插入元素**
 
+## 142-Linked List Cycle II[两个指针]
+
+[Linked List Cycle II](https://leetcode.com/problems/linked-list-cycle-ii/)
+
+同上一题，不过需要返回环开始的结点。解法也类似。
+
+设$A$表示起点到环开始结点的距离，$B$为环开始结点到第一次相遇的距离，$N$表示环的长度。则有$2A+2B-(A+B)=A+B=N$。
+
+因此找到第一次相遇的结点后，让慢指针继续走同时头结点再开始一个慢指针，它们相遇的结点即是环的开始。
+
+```c++
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        if(head == nullptr)
+            return nullptr;
+        ListNode *one = head, *two = head;
+        while (two && two->next)
+        {
+            one = one->next;
+            two = two->next->next;
+            if(one == two)
+            {
+                ListNode* one2 = head;
+                while(one != one2)
+                {
+                    one = one->next;
+                    one2 = one2->next;
+                }
+                return one2;
+            }
+        }
+        return nullptr;
+    }
+};
+```
+
+## 146-LRU Cache[链表+map]
+
+[LRU Cache](https://leetcode.com/problems/lru-cache/)
+
+实现LRU算法。用一个链表表示操作，其中存储key。最新的操作在队首，最晚的在队末，每次维持这个链表。
+
+对于get和put操作，使用map记录key->(value, it)，这里it是存储key的链表结点的迭代器。
+
+```c++
+class LRUCache {
+private:
+    list<int> L;
+    unordered_map<int, pair<int, list<int>::iterator>> mp;
+    int capacity;
+
+    void update(int key)
+    { // 更新使用记录的list
+        auto it = mp[key].second;
+        L.erase(it);
+        L.push_front(key);
+        mp[key].second = L.begin();
+    }
+
+public:
+    explicit LRUCache(int capacity): capacity(capacity) {}
+
+    int get(int key) {
+        if(mp.find(key) == mp.end())
+            return -1;
+        else
+        {
+            update(key);
+            return mp[key].first;
+        }
+    }
+
+    void put(int key, int value) {
+        if(mp.find(key) == mp.end())
+        {
+            if(mp.size() == capacity)
+            {//容量超限制
+                mp.erase(L.back());
+                L.pop_back();
+            }
+            L.push_front(key);
+            mp[key] = make_pair(value, L.begin());
+        } else
+        {
+            mp[key].first = value;
+            update(key);
+        }
+    }
+};
+```
+
+## 148-Sort List[归并排序]
+
+[Sort List](https://leetcode.com/problems/sort-list/)
+
+对链表进行排序，要求O(nlogn)的时间复杂度且用常量的空间复杂度。
+
+考虑使用迭代版归并排序（不使用递归是因为递归本身需要用栈，不是常量空间）。
+
+```c++
+struct ListNode {
+    int val;
+    ListNode *next{};
+
+    explicit ListNode(int x) : val(x), next(nullptr) {}
+};
+class Solution {
+private:
+    ListNode *split(ListNode*head, int n)
+    {//从head中取前n个结点，返回剩下的链表的首结点指针
+        for(int i=1; head&&i<n; i++)
+            head = head->next;
+        if(!head)
+            return nullptr;
+        else
+        {
+            ListNode* second = head->next;
+            head->next = nullptr;
+            return second;
+        }
+    }
+    ListNode *merge(ListNode*left, ListNode*right, ListNode*tail)
+    {//把left和right链表按顺序追加到tail尾部，最后返回链表尾部的指针
+        ListNode * cur = tail;
+        while (left&&right)
+        {
+            if(left->val < right->val )
+            {
+                cur->next = left;
+                cur = left;
+                left=left->next;
+            } else{
+                cur->next = right;
+                cur = right;
+                right = right->next;
+            }
+        }
+        while (left)
+        {
+            cur->next = left;
+            cur = left;
+            left = left->next;
+        }
+        while (right)
+        {
+            cur->next = right;
+            cur = right;
+            right = right->next;
+        }
+        return cur;
+    }
+public:
+    ListNode *sortList(ListNode *head) {
+        if(!head || !(head->next)) return head;
+		//先求链表长度
+        ListNode* p = head;
+        int length = 0;
+        while(p)
+        {
+            length++;
+            p=p->next;
+        }
+        ListNode dummy(0);//增加一个头结点便于插入
+        dummy.next = head;
+        ListNode *left, *right, *tail, *cur;
+        for(int step = 1; step<length; step*=2)
+        {
+            cur = dummy.next; 
+            tail = &dummy;
+            while(cur)
+            {
+                left = cur;
+                right = split(left, step);
+                cur = split(right, step);
+                tail = merge(left, right, tail);
+            }
+        }
+        return dummy.next;
+    }
+};
+```
+
+
+
+
+
 
 
