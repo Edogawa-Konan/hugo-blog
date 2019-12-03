@@ -1107,8 +1107,6 @@ public:
     }
 ```
 
-
-
 ## 124-Binary Tree Maximum Path Sum「贪心/递归」:warning:
 
 [Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/discuss/39775/Accepted-short-solution-in-Java)
@@ -1137,7 +1135,60 @@ public:
 };
 ```
 
-##  138-Copy List with Random Pointer 链表
+## 128-Longest Consecutive Sequence「数组」:warning:
+
+[Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/)
+
+给定一个数组，找到可以凑成的最长连续序列。
+
+考虑用set保存所有数字，然后遍历数组，针对数组nums中每个元素`x`，如果`x-1`不在集合中，那么`x`可以认为是一个候选序列的开始，然后逐一判断`x+1`、`x+2`……，更新最大长度即可。
+
+```c++
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        unordered_set<int> s(nums.begin(), nums.end());
+        int best = 0;
+        int y;
+        for(auto & x : s)
+        {
+            if(s.find(x-1) == s.end())
+            {// x是序列的开始
+                y = x + 1;
+                while (s.find(y) != s.end())
+                {
+                    y = y + 1;
+                }
+                best = max(best, y-x);
+            }
+        }
+        return best;
+
+    }
+};
+```
+
+## 136-Single Number「异或」
+
+[Single Number](https://leetcode.com/problems/single-number/)
+
+题目：给定一个数组，里面有一个元素出现一次，其它的都出现两次。找出这个出现仅仅一次的家伙。
+
+将所有元素逐一异或即可。**异或具有交换性。**
+
+```c++
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        int res = 0;
+        for (const auto & v:nums)
+            res ^= v;
+        return res;
+    }
+};
+```
+
+##  138-Copy List with Random Pointer「链表」
 
 [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/)
 
@@ -1183,41 +1234,79 @@ public:
 };
 ```
 
+---
+
 **ps: map用[]访问不到，会插入元素**
 
+<<<<<<< HEAD
 ## 142-Linked List Cycle II[两个指针]
+=======
+## 139-Word Break「DP」
 
-[Linked List Cycle II](https://leetcode.com/problems/linked-list-cycle-ii/)
+[Word Break](https://leetcode.com/problems/word-break/)
 
-同上一题，不过需要返回环开始的结点。解法也类似。
+给定字符串，判断是否能被一个字典中单词完全拆分。
 
-设$A$表示起点到环开始结点的距离，$B$为环开始结点到第一次相遇的距离，$N$表示环的长度。则有$2A+2B-(A+B)=A+B=N$。
-
-因此找到第一次相遇的结点后，让慢指针继续走同时头结点再开始一个慢指针，它们相遇的结点即是环的开始。
+考虑使用`dp[i]`表示以i结尾的子串是否满足，则针对每个i，对其前面所有的元素进行遍历，如果存在j满足要求`dp[j]==true`且`s[j..i]`在字典中，令`dp[i]==true`。
 
 ```c++
 class Solution {
 public:
-    ListNode *detectCycle(ListNode *head) {
+    bool wordBreak(string s, vector<string>& wordDict) {
+        vector<bool> dp(s.size()+1, false);
+        dp[0]=true;
+        for(int i=1;i<s.length();i++)
+        {
+            for(int j=i-1; j>=0; j--)
+            {
+                if(dp[j])
+                {
+                    string word = s.substr(j, i-j);
+                    if(find(wordDict.begin(), wordDict.end(), word) != wordDict.end())
+                    {
+                        dp[i] = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return dp[s.length()];
+    }
+};
+```
+
+## 141-Linked List Cycle「链表」
+
+[Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/)
+
+判断链表是否有环。
+
+O(1)的方法，设置两个指针，一个走两步，一个走一步，如果有环它们终会回合，否则就是走到空指针循环结束。
+
+```c++
+struct ListNode {
+    int val;
+    ListNode *next;
+
+    explicit ListNode(int x) : val(x), next(nullptr) {}
+};
+
+
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
         if(head == nullptr)
-            return nullptr;
-        ListNode *one = head, *two = head;
-        while (two && two->next)
+            return false;
+        ListNode* one = head;
+        ListNode* two = head;
+        while (two->next && two->next->next)
         {
             one = one->next;
             two = two->next->next;
             if(one == two)
-            {
-                ListNode* one2 = head;
-                while(one != one2)
-                {
-                    one = one->next;
-                    one2 = one2->next;
-                }
-                return one2;
-            }
+                return true;
         }
-        return nullptr;
+        return false;
     }
 };
 ```
@@ -1368,6 +1457,38 @@ public:
 };
 ```
 
+## 152-Maximum Product Subarray
+
+[Maximum Product Subarray]()
+
+>给定一个数组，求最大连续积。
+
+本题可以分为两种场景，`aAbB`和`aAbBc`两种情况，大写表示正，小写表示负数。第一种最大值就是其本身，而第二种情况最大值在于`aAbB`和`AbBc`之间。
+
+因此设置两个方向，前后同步开始，更新最大值！
+
+```c++
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        int front = 1;
+        int back = 1;
+        int res = INT_MIN;
+        for(int i = 0; i< nums.size(); i++)
+        {
+            front *= nums[i];
+            back *= nums[nums.size()-1 - i];
+            res = max(res, max(front, back));
+            if(front==0)
+                front = 1;
+            if(back==0)
+                back = 1;
+        }
+        return res;
+    }
+};
+```
+
 ## 155-Min Stack「栈」
 
 [Min Stack](https://leetcode.com/problems/min-stack/)
@@ -1452,3 +1573,4 @@ public:
 ```
 
 PS:`nullptr==nullptr`为true。
+
