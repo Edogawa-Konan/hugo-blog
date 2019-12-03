@@ -1368,9 +1368,87 @@ public:
 };
 ```
 
+## 155-Min Stack「栈」
+
+[Min Stack](https://leetcode.com/problems/min-stack/)
+
+> 实现一个栈，要求以常量时间返回栈的最小值。
+
+基本思路是，用一个变量保存当前栈的最小值。但是这涉及一个问题，如果最小值被pop掉，如果找下一个最小值的问题。因此，可以在push和pop上加一点技巧，即如果push时当前值**小于等于**最小值，那么先把最小值push，再push当前值。同理，pop时，如果栈顶值等于最小值，pop一次之后，再次取栈顶元素，其表示次最小值，然后再pop一次。
+
+```c++
+class MinStack {
+private:
+    int min_element = INT32_MAX;
+    stack<int> s;
+public:
+    /** initialize your data structure here. */
+    MinStack() {
+
+    }
+
+    void push(int x) {
+        if(x<=min_element)//很关键
+        {
+            s.push(min_element);
+            min_element = x;
+        }
+        s.push(x);
+    }
+
+    void pop() {
+        if(s.top() == min_element)
+        {
+            s.pop();
+            min_element = s.top();
+            s.pop();
+        }
+        else
+            s.pop();
+    }
+
+    int top() {
+        return s.top();
+    }
+
+    int getMin() {
+        return min_element;
+    }
+};
+```
+
+## 160-Intersection of Two Linked Lists「两个指针」
+
+[Intersection of Two Linked Lists](https://leetcode.com/problems/intersection-of-two-linked-lists/)
+
+找到两个链表相交的开始阶段，不相交返回null。
+
+和141相似，同样设置两个指针。假设链表1起点到相交结点的距离为A，链表2起点到相交结点距离为B，两个链表重合部分长度为C。
+
+基本想法是：两个指针p、q分别从链表1、2起点开始，每次走一步。如果其中一个到了结尾（为null），则让其从另一个链表的头部开始。
+
+显然，如果两个链表相交，则两个指针第二圈一定会重合，重合的地方就是开始的地方（都走了$A+B+C$的长度）。如果没有相交，最后它们都会走到结尾，为null，因为都走了$A+B+2C$的长度。
+
+```c++
+struct ListNode {
+         int val;
+         ListNode *next;
+         explicit ListNode(int x) : val(x), next(nullptr) {}
+     };
 
 
+class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        ListNode *p=headA, *q=headB;
+        while (p!=q)
+        {
+            p = p?p->next:headB;
+            q = q?q->next:headA;
+        }
+        return p;
+    }
+};
+```
 
-
-
-
+PS:`nullptr==nullptr`为true。
