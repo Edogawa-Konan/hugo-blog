@@ -1574,3 +1574,88 @@ public:
 
 PS:`nullptr==nullptr`为true。
 
+## 169-Majority Element「莫尔投票法」
+
+[Majority Element](https://leetcode.com/problems/majority-element/)
+
+>找到一个数组中出现次数超过一半的元素。
+
+莫尔投票法：采取两两抵消的策略，即两个不同的元素相互抵消。
+
+```java
+public class Solution169 {
+
+    public int majorityElement(int[] nums) {
+        int major = nums[0];
+        int count = 1;
+        for(int i = 1; i<nums.length; i++)
+        {
+            if(count == 0)
+            {
+                count++;
+                major = nums[i];
+            }else if (major == nums[i])
+                count++;
+            else
+                count--;
+        }
+        return major;
+    }
+}
+
+```
+
+补充一个位运算的方法：
+
+```java
+ public int majorityElement_(int[] nums) {
+
+        int res = 0;
+        for(long i = 0, mask=1; i<32; i++)//mask一定要是long类型
+        {
+            int bits = 0;
+            for(int num : nums)
+            {
+                if ((num & mask) > 0)
+                    bits ++;
+                if (bits > nums.length / 2)
+                    res |= mask;
+            }
+            mask<<=1;
+        }
+        return res;
+    }
+```
+
+PS:java中`1<<32`等于`1<<0`，不同于`1<<31<<1`。因为*All shifts are done mod 32 for ints and mod 64 for longs.*
+
+## 198-House Robber「DP」
+
+[House Robber](https://leetcode.com/problems/house-robber/)
+
+>题目给定一个正数组，相邻的元素不能选，求最大和问题
+
+设`dp[i]`表示到元素i的最大值，则有：
+
+`dp[i] = max(dp[i-2] + nums[i], dp[i-1])`。
+
+针对这一关系，有不同的解决方法，精简后如下：
+
+```java
+public class Solution198 {
+    public int rob(int[] nums) {
+        int odd = 0, even = 0;
+        for(int i = 0; i<nums.length; i++)
+        {
+            if(i%2==0)
+            {
+                even = Math.max(even+nums[i], odd);
+            }
+            else
+                odd = Math.max(nums[i]+odd, even);
+        }
+        return Math.max(odd, even);
+    }
+}
+```
+
