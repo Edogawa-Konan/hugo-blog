@@ -1659,3 +1659,49 @@ public class Solution198 {
 }
 ```
 
+## 207-Course Schedule[拓扑排序]
+
+[Course Schedule](https://leetcode.com/problems/course-schedule/)
+
+> 判断DAG是否有环
+
+采用拓扑排序算法，[参考资料](https://oi-wiki.org/graph/topo/)。
+
+```JAVA
+public class Solution207 {
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        ArrayList<ArrayList<Integer>> G = new ArrayList<>(numCourses);
+        Queue<Integer> Q = new LinkedList<>();
+        int count=numCourses;
+        int[] degree = new int[numCourses];
+        for(int i=0;i<numCourses;i++)
+            G.add(new ArrayList<Integer>());
+        for (int i = 0 ;i<prerequisites.length; i++)
+        {
+            degree[prerequisites[i][0]]++;
+            G.get(prerequisites[i][1]).add(prerequisites[i][0]);
+        }
+        for(int i = 0; i<degree.length; i++)
+        {
+            if(degree[i]==0)
+            {
+                Q.add(i);
+            }
+        }
+        while (Q.size()!=0)
+        {
+            int cur = Q.poll();
+            count--;
+            for(int next: G.get(cur))
+            {
+                if(--degree[next]==0)
+                {
+                    Q.add(next);
+                }
+            }
+        }
+        return count==0;
+    }
+}
+```
+
