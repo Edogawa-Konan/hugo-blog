@@ -1238,9 +1238,6 @@ public:
 
 **ps: map用[]访问不到，会插入元素**
 
-<<<<<<< HEAD
-## 142-Linked List Cycle II[两个指针]
-=======
 ## 139-Word Break「DP」
 
 [Word Break](https://leetcode.com/problems/word-break/)
@@ -1307,6 +1304,38 @@ public:
                 return true;
         }
         return false;
+    }
+};
+```
+
+## 142-Linked List Cycle II[两个指针]
+[Linked List Cycle II](https://leetcode.com/problems/linked-list-cycle-ii/)
+同上一题，不过需要返回环开始的结点。解法也类似。
+设$A$表示起点到环开始结点的距离，$B$为环开始结点到第一次相遇的距离，$N$表示环的长度。则有$2A+2B-(A+B)=A+B=N$。
+因此找到第一次相遇的结点后，让慢指针继续走同时头结点再开始一个慢指针，它们相遇的结点即是环的开始。
+```c++
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        if(head == nullptr)
+            return nullptr;
+        ListNode *one = head, *two = head;
+        while (two && two->next)
+        {
+            one = one->next;
+            two = two->next->next;
+            if(one == two)
+            {
+                ListNode* one2 = head;
+                while(one != one2)
+                {
+                    one = one->next;
+                    one2 = one2->next;
+                }
+                return one2;
+            }
+        }
+        return nullptr;
     }
 };
 ```
