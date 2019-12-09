@@ -3,7 +3,7 @@ title: "Topliked100"
 date: 2019-11-07T22:25:52+08:00
 draft: false
 tags: ["Leetcode"]
-categories: ["Leetcode"]
+categories: ["算法"]
 ---
 
 # Top liked 100
