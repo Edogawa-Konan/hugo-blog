@@ -297,3 +297,68 @@ public int findDuplicate(int[] nums) {
     }
 ```
 
+## 300-Longest Increasing Subsequence[DP]
+
+[Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/)
+
+>给定一个数组，求最长递增序列的长度（不一定连续）。
+
+方法一采用DP的思想，令`dp[i]`表示以`i`为结尾的子序列的最大长度，初始化`dp[i]=1`。于是对于所有的`0<=j<i`有`dp[i] = max(dp[j]+1, dp[i]) `。时间复杂度$O(n^2)$
+
+```java
+public int lengthOfLIS(int[] nums) {
+        if(nums.length==0)
+            return 0;
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, 1);
+        int res = 1;
+        for(int i = 1; i<nums.length; i++)
+        {
+            for(int j = 0; j<i; j++)
+            {
+                if(nums[i] > nums[j])
+                    dp[i] = Math.max(dp[i], dp[j]+1);
+            }
+            res = Math.max(dp[i], res);
+        }
+        return res;
+    }
+```
+
+方法二用一个数组end（下文同tails），记录这个最长的序列，每次二分查找。时间复杂度$O(NlogN)$。
+
+Each time we only do one of the two:
+
+```
+(1) if x is larger than all tails, append it, increase the size by 1
+(2) if tails[i-1] < x <= tails[i], update tails[i] （保证这个序列元素尽可能小）
+```
+
+```java
+public int lengthOfLIS1(int[] nums){
+        int[] end = new int[nums.length];
+        int size = 0;
+        for(int v: nums)
+        {
+            int i = 0, j=size;
+            while (i!=j)
+            {
+                int m = (i+j)/2;
+                if(end[m]<v)
+                    i=m+1;
+                else
+                    j=m;
+            }
+            end[i] = v;
+            if(i==size) size++;
+        }
+        return size;
+    }
+```
+
+
+
+
+
+
+
