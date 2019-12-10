@@ -134,5 +134,166 @@ public int findKthLargest1(int[] nums, int k){
     }
 ```
 
+## 236-Lowest Common Ancestor of a Binary Tree「二叉树」
 
+[Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+
+>给定一个二叉树，以及两个结点，找到它们的最低公共结点。
+
+```java
+public static class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode(int x) {
+            val = x;
+        }
+    }
+
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null)
+            return null;
+        else if (root == p)
+            return p;
+        else if (root == q)
+            return q;
+        else {
+            TreeNode left = lowestCommonAncestor(root.left, p, q);
+            TreeNode right = lowestCommonAncestor(root.right, p, q);
+            if (left != null && right != null)
+                return root;
+            else if (left != null)
+                return left;
+            else return right;
+        }
+    }
+```
+
+## 238-Product of Array Except Self「数组」
+
+[Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/)
+
+> 给定一个数组，要求返回一个数组，每个元素等于原数组除对应元素外其它所有元素的乘积。
+
+先用一个数组记录累积，`product[i]`记录着从`nums[0]`到`nums[i-1]`的乘积。然后再从数组右侧开始遍历，用一个元素记录累积，这样就可以把当前元素`nums[i]`空出来了。
+
+```java
+public int[] productExceptSelf(int[] nums) {
+        int[] product = new int[nums.length];
+        product[0] = 1;
+
+        for(int i = 1; i<nums.length; i++)
+        {
+            product[i] = product[i-1] * nums[i-1];
+        }
+        int right = 1;
+        for(int i = nums.length-1; i>=0; i--)
+        {
+            product[i] = product[i] * right;
+            right = right * nums[i];
+        }
+        return product;
+    }
+```
+
+## 240-Search a 2D Matrix II「查找」
+
+[Search a 2D Matrix II](https://leetcode.com/problems/search-a-2d-matrix-ii/)
+
+> 行，列分别有序的矩阵查找指定元素。
+
+从右上角作为起点，先向下走，再向左走。$O(M+N)$的时间复杂度。
+
+```java
+public boolean searchMatrix(int[][] matrix, int target) {
+        if(matrix.length==0)
+            return false;
+        int row = 0, col = matrix[0].length -1;
+        while (row<matrix.length&&col>=0)
+        {
+            if(matrix[row][col] == target)
+                return true;
+            else if(matrix[row][col] > target)
+                col--;
+            else
+                row++;
+        }
+        return false;
+    }
+```
+
+## 279-Perfect Squares「DP」
+
+[Perfect Squares](https://leetcode.com/problems/perfect-squares/)
+
+>给定一个数n，找到最少完美平方数（1，4， 9， 16，……）的数量，使得它们和为n，可以重复利用。
+
+定义$DP[i]$表示和为$i$的最少完美平方数的数量，令$j$表示任意小于$i$的完美平方数（$j^2<=i$），则有
+$$
+DP[i] = min(DP[i], DP[i-j^2])
+$$
+
+```java
+public int numSquares(int n) {
+        int[] dp = new int[n+1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        if(n==0)
+            return 0;
+        for(int i = 1; i<=n; i++)
+            for(int j = 1; j*j<=i; j++)
+            {
+                dp[i] = Math.min(dp[i], dp[i-j*j] + 1);
+            }
+        return dp[n];
+    }
+```
+
+## 283-Move Zeroes
+
+[Move Zeroes](https://leetcode.com/problems/move-zeroes/)
+
+>讲一个数组所有非0元素移到前面，0放最后。
+
+```java
+public void moveZeroes(int[] nums) {
+        int index = 0;
+        int i;
+        for (i = 0; i < nums.length; i++) {
+            if (nums[i] != 0)
+                nums[index++] = nums[i];
+        }
+        Arrays.fill(nums, index, nums.length, 0);
+    }
+```
+
+## 287-Find the Duplicate Number
+
+[Find the Duplicate Number](https://leetcode.com/problems/find-the-duplicate-number/)
+
+>给定一个数组，n+1个整数，每个整数在1~n之间，但是有一个元素至少重复一次。找出这个元素。
+
+注意，题目说至少重复一次，如果没有这个条件，还可以多一个解法，即先`1~n`的和，然后用这$n+1$个数的和减去前一个就是结果。
+
+对于本道题而已，首先可以用哈希表。还有一种方法，借鉴了寻找链表的环结点的思想：
+
+```java
+public int findDuplicate(int[] nums) {
+        if(nums.length==0)
+            return 0;
+        int slow = nums[0], fast = nums[nums[0]];
+        while (slow != fast)
+        {
+            slow = nums[slow];
+            fast = nums[nums[fast]];
+        }
+        fast = 0;
+        while (slow != fast)
+        {
+            slow = nums[slow];
+            fast = nums[fast];
+        }
+        return fast;
+    }
+```
 
