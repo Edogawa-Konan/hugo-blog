@@ -391,6 +391,31 @@ public int maxProfit(int[] prices) {
 
 显然，三个数组因为只用到一次，因此可以简化为三个变量保存即可。
 
+## 322-Coin Change「DP」
+
+[Coin Change](https://leetcode.com/problems/coin-change/)
+
+>给定一组硬币，寻找最少的数量使得它们和为给定值。每种硬币无限制数目。
+
+用`dp[i]`表示目标值为`i`的最少硬币数。
+
+```java
+public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount+1];
+        Arrays.fill(dp, amount+1);
+        dp[0] = 0;
+        for(int i = 1; i<=amount; i++)
+            for(int j = 0; j<coins.length; j++)
+            {
+                if(i>=coins[j])
+                    dp[i] = Math.min(dp[i], dp[i-coins[j]]+1);
+            }
+        return dp[amount]==amount+1?-1:dp[amount];
+    }
+```
+
+注意这里不能直接设置为int的最大值，会出现溢出问题。
+
 
 
 
