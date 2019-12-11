@@ -416,7 +416,64 @@ public int coinChange(int[] coins, int amount) {
 
 注意这里不能直接设置为int的最大值，会出现溢出问题。
 
+##  337-House Robber III
 
+[House Robber III](https://leetcode.com/problems/house-robber-iii/)
 
+>相邻结点不能选，求最大值。
 
+用`rob(root)`表示以`root`为根的子树的最大值，此外因为递归过程会有重复结点计算的问题，因此用hashmap保存中间结果。最优子结构和重叠子问题——标准的dp。
+
+```java
+public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode(int x) {
+            val = x;
+        }
+    }
+    private HashMap<TreeNode, Integer> map = new HashMap<>();
+
+    public int rob(TreeNode root) {
+        if(root==null)
+            return 0;
+        else if(map.containsKey(root))
+            return map.get(root);
+        else
+        {
+            int val = 0;
+            if(root.left!=null)
+                val += rob(root.left.left) + rob(root.left.right);
+            if(root.right!=null)
+                val += rob(root.right.left) + rob(root.right.right);
+            val = Math.max(val + root.val, rob(root.left) + rob(root.right));
+            map.put(root, val);
+            return val;
+        }
+    }
+```
+
+另一种解法。因为之前求解过程中在递归传递过程中没有保留是否“采用”当前结点的信息，故而可以修改一下。这样也可避免重复计算的问题。
+
+```java
+public int rob2(TreeNode root)
+    {
+        int[] res = subrob(root);
+        return Math.max(res[0], res[1]);
+    }
+    private int[] subrob(TreeNode root)
+    {
+        if(root==null)
+            return new int[2];
+        int[] left = subrob(root.left);
+        int[] right = subrob(root.right);
+
+        int[] res = new int[2];
+        res[0] = root.val + left[1] + right[1];  //选了root
+        res[1] = Math.max(left[0], left[1]) + Math.max(right[0], right[1]); //没选root
+        return res;
+    }
+```
 
