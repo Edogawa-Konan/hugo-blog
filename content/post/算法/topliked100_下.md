@@ -356,7 +356,40 @@ public int lengthOfLIS1(int[] nums){
     }
 ```
 
+## 309-Best Time to Buy and Sell Stock with Cooldown「DP」
 
+[Best Time to Buy and Sell Stock with Cooldown](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
+
+>同之前的股票买卖问题，额外增加一个限制为，每次卖完之后，必须休息一天。
+
+采样动态规划的思想，如下图表示状态转移，一共三种状态s0、s1和s2。于是我们使用三个数组`s0[i]`、`s1[i]`和`s2[i]`分别表示第i天三个状态的最大利润。
+
+![leetcode309.png](https://prime-blog.oss-cn-hangzhou.aliyuncs.com/leetcode/leetcode309.png)
+
+```java
+public int maxProfit(int[] prices) {
+        if(prices.length <=1 )
+            return 0;
+        int res = Integer.MIN_VALUE;
+        int[] s0 = new int[prices.length];
+        int[] s1 = new int[prices.length];
+        int[] s2 = new int[prices.length];
+        s0[0] = 0;
+        s1[0] = -prices[0];
+        s2[0] = Integer.MIN_VALUE;
+        for(int i = 1; i<prices.length; i++)
+        {
+            s0[i] = Math.max(s2[i-1], s0[i-1]);
+            s1[i] = Math.max(s0[i-1]-prices[i], s1[i-1]);
+            s2[i] = s1[i-1] + prices[i];
+            res = Math.max(res, s0[i]);
+            res = Math.max(res, s2[i]);
+        }
+        return res;
+    }
+```
+
+显然，三个数组因为只用到一次，因此可以简化为三个变量保存即可。
 
 
 
