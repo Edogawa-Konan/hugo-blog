@@ -7,7 +7,7 @@ tags: ['Leetcode']
 categories: ['算法']
 ---
 
-# Topliked100——下
+# Topliked100（三）
 
 ## 208-Implement Trie (Prefix Tree)「树」
 
@@ -474,6 +474,180 @@ public int rob2(TreeNode root)
         res[0] = root.val + left[1] + right[1];  //选了root
         res[1] = Math.max(left[0], left[1]) + Math.max(right[0], right[1]); //没选root
         return res;
+    }
+```
+
+## 338-Counting Bits「位运算+dp」
+
+[Counting Bits](https://leetcode.com/problems/counting-bits/)
+
+>给定一个数num，对任意0<=i<=num的i，计算i中1的个数，返回结果数组。
+
+标准位运算。
+
+```java
+public int[] countBits(int num) {
+        int[] res = new int[num+1];
+        for(int i = 1; i<=num; i++)
+            res[i] = res[i>>1] + (i & 1); //这里使用i&1取最后一位
+        return res;
+    }
+```
+
+## 347-Top K Frequent Elements「哈希表/桶排序」
+
+[Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/)
+
+>找到一个数组中，topk频率最高的元素。
+
+方法一：先用哈希表存储`num->frequency`的pair，然后用桶排序找topk。
+
+方法二：先用哈希表存储`num->frequency`， 然后再用`treemap`存储`frequency->num_list`（或者其它语言类似结构，主要用于排序）。
+
+方法三：先用哈希表存储`num->frequency`，然后放入优先队列。
+
+这里方法一是最优的，实现如下：
+
+```java
+public List<Integer> topKFrequent(int[] nums, int k) {
+        List[] bucket = new List[nums.length+1];
+        Map<Integer, Integer> map = new HashMap<>();  // num -> frequency
+        for(int v: nums)
+            map.put(v, map.getOrDefault(v, 0)+1);
+
+        for (int key: map.keySet())
+        {
+            if(bucket[map.get(key)] == null)
+            {
+                bucket[map.get(key)] = new ArrayList<>();
+            }
+            bucket[map.get(key)].add(key);
+        }
+        List<Integer> res = new ArrayList<>();
+        for(int i = bucket.length-1; i>=0&&res.size()<k; i--)
+        {
+            if(bucket[i]!=null)
+            {
+              // 这里最终可能超过k个，但题目没卡，如果卡，可以最后返回res[:k]
+                res.addAll(bucket[i]); 
+              
+            }
+        }
+        return res;
+    }
+```
+
+## 394-Decode String「栈\字符串」
+
+[Decode String](https://leetcode.com/problems/decode-string/)
+
+>解码字符串。s = "3[a2[c]]", return "accaccacc".
+
+**看到这种嵌套结构，不用想，要么用栈要么递归。**
+
+遍历字符串，针对各种符号相应处理即可。
+
+```java
+public String decodeString(String s) {
+        String res = ""; // 记录当前串，最终就是结果串
+        Stack<Integer> numStack = new Stack<>();
+        Stack<String> strStack = new Stack<>();
+        int cur = 0;
+        while (cur<s.length())
+        {
+            if(s.charAt(cur)>='0'&&s.charAt(cur)<='9')
+            {
+                int sum = 0;
+                while (s.charAt(cur)>='0'&&s.charAt(cur)<='9')
+                {
+                    sum = sum*10 + s.charAt(cur) - '0';
+                    cur++;
+                }
+                numStack.push(sum);
+            }
+            else if(s.charAt(cur) == '[') {
+                strStack.push(res);
+                res = "";
+                cur++;
+            }
+            else if (s.charAt(cur)==']')
+            {//对当前的字串处理
+                int num = numStack.pop();
+                StringBuilder tmp = new StringBuilder(strStack.pop()); // 获取外部的串
+                for(int i = 0;i<num; i++)
+                {
+                    tmp.append(res);
+                }
+                res = tmp.toString(); //更新当前结果
+                cur++;
+            }
+            else
+            {
+                res += s.charAt(cur++);
+            }
+        }
+        return res;
+    }
+```
+
+## 406-Queue Reconstruction by Height「找规律」
+
+[Queue Reconstruction by Height](https://leetcode.com/problems/queue-reconstruction-by-height/)
+
+>队列排序。
+
+1. 先找出个子最高的，按照第二个参数k排个序。
+2. 找到次高的，按照k插入其中
+3. 重复以上操作
+
+```java
+public int[][] reconstructQueue(int[][] people) {
+        Arrays.sort(people, (int[] o1, int[] o2)->{return o1[0]!=o2[0]?o2[0]-o1[0]:o1[1]-o2[1];});//从大到小排序
+        List<int[]> res = new LinkedList<>();
+
+        for (int[] p: people)
+            res.add(p[1], p);
+
+        return res.toArray(new int[people.length][2]);
+    }
+```
+
+
+
+## 416-Partition Equal Subset Sum「DP」
+
+[Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/)
+
+>本质上是，给定一个数组，判断是否能找到一个子集，和为数组所有元素和的一半。
+
+令`dp[i][j]`表示从数组`nums[0……i]`中是否能找到子集和为`j`。
+
+```java
+public boolean canPartition(int[] nums) {
+        int target = 0;
+        for(int n: nums)
+            target+=n;
+        if((target & 1) ==1||target == 0)
+            return false;
+        else
+            target >>= 1;
+        boolean[][] dp = new boolean[nums.length][target+1]; 
+  // dp[i][j]表示下标为0……i的元素中，选择是否和等于j。
+        if(nums[0] < target)  // first row
+            dp[0][nums[0]] = true;
+
+        for(int i = 0; i<dp.length; i++)
+            dp[i][0] = true;
+
+        for(int i = 1; i<nums.length; i++)
+            for(int j = 1; j<=target; j++) // i和j的顺序这里替换也可以，但是一般还是以二维数组顺序
+            {
+                if(nums[i] > j)
+                    dp[i][j] = dp[i-1][j];
+                else
+                    dp[i][j] = dp[i-1][j] || dp[i-1][j-nums[i]];
+            }
+        return dp[nums.length-1][target];
     }
 ```
 
