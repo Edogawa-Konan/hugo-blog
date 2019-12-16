@@ -651,3 +651,47 @@ public boolean canPartition(int[] nums) {
     }
 ```
 
+## 437-Path Sum III「DFS+哈希」
+
+[Path Sum III](https://leetcode.com/problems/path-sum-iii/)
+
+>给定二叉树，找到路径和等于target的数量。路径只能从上往下。
+
+**解答很巧妙，值得多看看**
+
+```java
+public static class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode(int x) {
+            val = x;
+        }
+    }
+
+    public int pathSum(TreeNode root, int sum) {
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);  //这个不能忘，考虑cumSum==sum的时候
+        return DFS(root, 0, sum, map);
+
+    }
+    private int DFS(TreeNode root, int cumSum, int sum, Map<Integer, Integer> map)
+    {
+        if(root==null)
+            return 0;
+        cumSum += root.val; // 加入当前结点
+        // get the number of valid path, ended by the current node。
+        // 注意这里cumSum是从根开始到当前结点的，如果cumSum-sum的值存在，表示存在一条路径和为sum，因为cumSum-sum也是一个从跟结点出发的路径
+        int curValidNum = map.getOrDefault(cumSum - sum, 0);
+        // update the map with the current sum, so the map is good to be passed to the next recursion
+        map.put(cumSum, map.getOrDefault(cumSum, 0) + 1);
+        //Each recursion returns the total count of valid paths in the subtree rooted at the current node.
+        // And this sum can be divided into three parts
+        int count = curValidNum + DFS(root.left, cumSum, sum, map) + DFS(root.right, cumSum, sum, map);
+        // restore the map, as the recursion goes from the bottom to the top
+        map.put(cumSum, map.get(cumSum) - 1);
+        return count;
+    }
+```
+
