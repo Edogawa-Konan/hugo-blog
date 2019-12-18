@@ -635,7 +635,6 @@ public boolean canPartition(int[] nums) {
   // dp[i][j]表示下标为0……i的元素中，选择是否和等于j。
         if(nums[0] < target)  // first row
             dp[0][nums[0]] = true;
-
         for(int i = 0; i<dp.length; i++)
             dp[i][0] = true;
 
@@ -650,6 +649,60 @@ public boolean canPartition(int[] nums) {
         return dp[nums.length-1][target];
     }
 ```
+
+
+
+```java
+public int findTargetSumWays(int[] nums, int S) {
+        int sums = 0;
+        for(int n: nums)
+            sums+=n;
+        int target = (sums + S) / 2;
+        if((sums + S) % 2 > 0||sums < S)
+            return 0;
+        int[][] dp = new int[nums.length][target+1];
+
+        for(int i = 0;i<nums.length; i++)
+            dp[i][0] = 1;
+        if(nums[0] <= target)
+            dp[0][nums[0]] = 1;
+
+        for(int i = 1;i<nums.length; i++)
+            for (int j = 1; j <=target; j++)
+            {
+                if(j>=nums[i])
+                    dp[i][j] = dp[i - 1][j] + dp[i - 1][j - nums[i]];
+                else
+                    dp[i][j] = dp[i - 1][j];
+            }
+//        return subsetSum(nums, target);
+        return dp[nums.length-1][target];
+    }
+
+    public int subsetSum(int[] nums, int target) {
+        int[][] dp = new int[nums.length + 1][target + 1];
+        dp[0][0] = 1;
+
+        for (int i = 1; i <= nums.length;  i++) {
+            for (int j = 0; j <= target;  j++) {
+                if (j >= nums[i - 1]) {
+                    dp[i][j] = dp[i - 1][j] + dp[i - 1][j - nums[i - 1]];
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[nums.length][target];
+    }
+
+    public static void main(String[] args) {
+        Solution494 s = new Solution494();
+        int[] nums = {0,0,0,0,0,0,0,0,1};
+        System.out.println(s.findTargetSumWays(nums, 1));
+    }
+```
+
+
 
 ## 437-Path Sum III「DFS+哈希」
 
