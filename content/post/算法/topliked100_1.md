@@ -618,48 +618,51 @@ f g h          f g h i
    
    ```
 
-## 76-Minimum Window Substring「字符串」:warning:
+## 76-Minimum Window Substring「滑动窗口」:warning:
 
 [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/)
 
-给定字符串s和t，找到s中包括t的最小窗口。
+> 给定字符串s和t，找到s中包括t的最小窗口。
 
-按照模板写如下:
-
-此处m初始化为t中字符的计数，而在while循环中，针对s[start, end]子串，对t串进行变换。外层while循环找到满足条件的子串，内层while保证子串最小。
-
-```c++
-class Solution {
-public:
-    string minWindow(string s, string t) {
-        vector<int> m(128, 0);
-        for(auto & c : t)
-            m[c]++;
-        size_t start = 0, end = 0, count = 0, minStart = 0, minLen = INT_MAX;
-        while (end < s.size())
-        {//end右移，扫过的字符对应都-1
-            if(m[s[end]] > 0) //字符在t之中
-                count++;
-            m[s[end++]]--;  // s中不在t中的字符会为负值
-            while (count == t.size())
+```java
+public String minWindow(String s, String t) {
+        int res_start = 0, res_end = 0, len = Integer.MAX_VALUE;
+        Map<Character, Integer> map = new HashMap<>();
+        for(char e : t.toCharArray())
+        {
+            map.put(e, map.getOrDefault(e, 0) + 1);
+        }
+        int start=0, end=0, count=map.size();//字符种类数
+        while (end<s.length())
+        {
+            char cur = s.charAt(end);
+            if(map.containsKey(cur))
             {
-                if(end-start < minLen)
+                map.put(cur, map.get(cur) - 1);
+                if(map.get(cur)==0)
+                    count--;
+            }
+            end++;
+            while (count==0)
+            {
+                char e = s.charAt(start);
+                if(map.containsKey(e))
                 {
-                    minStart = start;
-                    minLen = end - start;
+                    if(map.get(e)==0)
+                        count++;
+                    map.put(e, map.get(e) + 1);
                 }
-              	m[s[start]]++; // start指针向后移动，这个位置字符加一
-                if(m[s[start]]>0)
-                    count--; //s[start]在t中，故而跳出循环
+                if(end-start < len)
+                {
+                    res_start = start;
+                    res_end = end;
+                    len = end - start;
+                }
                 start++;
             }
         }
-        if (minLen != INT_MAX)
-            return s.substr(minStart, minLen);
-        return "";
+        return s.substring(res_start, res_end);
     }
-};
-
 ```
 
 ## 78-Subsets「回溯」
