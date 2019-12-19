@@ -650,7 +650,19 @@ public boolean canPartition(int[] nums) {
     }
 ```
 
+## 494-Target Sum「DP」:sparkles:
 
+[Target Sum](https://leetcode.com/problems/target-sum/)
+
+>题目改变一下，可以转换为子集求和问题。
+>
+>```python
+>                  sum(P) - sum(N) = target
+>sum(P) + sum(N) + sum(P) - sum(N) = target + sum(P) + sum(N)
+>                       2 * sum(P) = target + sum(nums)
+>```
+
+下面给了两种解法，分别是`dp[nums.length][S+1]`和`dp[nums.length+1][S+1]`。
 
 ```java
 public int findTargetSumWays(int[] nums, int S) {

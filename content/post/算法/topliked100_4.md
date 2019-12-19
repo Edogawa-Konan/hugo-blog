@@ -89,5 +89,42 @@ public List<Integer> findAnagrams(String s, String p) {
     }
 ```
 
+## 543-Diameter of Binary Tree「DFS」
+
+[Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree/)
+
+>求一个二叉树的直径（最长路径从一个结点到另一个结点）。
+
+显然，最长路径一定经过一个子树的根结点，可以转换为**求树的深度**的问题。
+
+```java
+public class Solution543 {
+    public static class TreeNode {
+      int val;
+      TreeNode left;
+      TreeNode right;
+      TreeNode(int x) { val = x; }
+    }
+    private int max = 0;
+    public int diameterOfBinaryTree(TreeNode root) {
+        maxdepth(root);
+        return max;
+    }
+    private int maxdepth(TreeNode root)
+    {
+        if(root==null)
+            return 0;
+        else
+        {
+            int left = maxdepth(root.left);
+            int right = maxdepth(root.right);
+            max = Math.max(left + right, max);
+            return Math.max(left, right) + 1;
+        }
+    }
+}
+
+```
+
 
 
