@@ -3,8 +3,8 @@ title: "Topliked100（四）"
 date: 2019-12-18T10:50:39+08:00
 lastmod: 2019-12-18T10:50:39+08:00
 draft: false
-tags: ['Leetcode']
-categories: ['算法']
+tags: ["Leetcode"]
+categories: ["算法"]
 ---
 
 # Topliked100(四)
@@ -230,7 +230,7 @@ private int count = 0;
 
 >题目大意给定一个数组，对每个元素找到需要走几步才能到达下一个大于当前值的元素。
 
-用栈保存元素下标要方便很多。
+用栈保存元素下标
 
 ```java
 public int[] dailyTemperatures(int[] T) {
