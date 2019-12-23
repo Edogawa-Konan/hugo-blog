@@ -193,3 +193,58 @@ public int findUnsortedSubarray(int[] nums) {
     }
 ```
 
+## 647-Palindromic Substrings「回文串/技巧型」
+
+[Palindromic Substrings](https://leetcode.com/problems/palindromic-substrings/)
+
+>给定一个字符串，找到所有回文子串的数量，起始和终止下标不一样的子串认为不是同一个。
+
+采用一种比较技巧的方法，每次从中间向两边“扩张”，分为奇数和偶数两种情况。
+
+```java
+private int count = 0;
+    public int countSubstrings(String s) {
+        if(s.length()==0)
+            return 0;
+        for(int i = 0;i<s.length(); i++)
+        {
+            expand(s, i, i);
+            expand(s, i, i+1);
+        }
+        return count;
+    }
+    private void expand(String s, int left, int right)
+    {
+        while (left>=0&&right<s.length()&&s.charAt(left) == s.charAt(right))
+        {
+            count++;
+            left--;
+            right++;
+        }
+    }
+```
+
+## 739-Daily Temperatures「栈」
+
+[Daily Temperatures](https://leetcode.com/problems/daily-temperatures/)
+
+>题目大意给定一个数组，对每个元素找到需要走几步才能到达下一个大于当前值的元素。
+
+用栈保存元素下标要方便很多。
+
+```java
+public int[] dailyTemperatures(int[] T) {
+    Stack<Integer> stack = new Stack<>();
+    int[] res = new int[T.length];
+    for(int i = 0;i<T.length; i++)
+    {
+        while (!stack.empty()&&T[stack.peek()]<T[i])
+        {
+            int top = stack.pop();
+            res[top] = i - top;
+        }
+        stack.push(i);
+    }
+    return res;
+}
+```
