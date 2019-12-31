@@ -248,3 +248,40 @@ public int[] dailyTemperatures(int[] T) {
     return res;
 }
 ```
+
+## 621-Task Scheduler「贪心」
+
+[Task Scheduler](https://leetcode.com/problems/task-scheduler/)
+
+>给定一个任务序列，和一个n，要求相同任务至少间隔n个才行，问最终执行时间。
+>
+>Input: tasks = ["A","A","A","B","B","B"], n = 2
+>Output: 8
+>Explanation: A -> B -> idle -> A -> B -> idle -> A -> B.
+
+采用贪心的思想，首先找到任务序列之中的出现频率最高的，比如例子中的A，然后可以得到A--A--A，其中-表示空槽，这样，只需要每次把剩余元素顺序填空槽即可保证满足题意，如果剩余空槽，则表示填充不满，因此必须有空闲槽，否则表示空槽不够，因此总时间等于序列长度。
+
+```java
+public int leastInterval(char[] tasks, int n) {
+        int max = -1;  // 最大频率
+        int maxCount = 0;  // 有几个最大频率的，考虑AAABBBC这种，AB都是最大频率
+        int[] counter = new int[26];
+        for(char e : tasks)
+        {
+            counter[e-'A']++;
+            if(counter[e-'A']>max)
+            {
+                max = counter[e-'A'];
+                maxCount = 1;
+            }
+            else if(counter[e-'A']==max)
+                maxCount++;
+        }
+        int partCount = max - 1;
+        int emptySlots = partCount * (n-(maxCount-1));
+        int remainTasks = tasks.length - max * maxCount;
+        int idles = Math.max(0, emptySlots-remainTasks);
+        return tasks.length + idles;
+    }
+```
+

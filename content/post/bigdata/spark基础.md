@@ -111,7 +111,20 @@ Spark stages are created by breaking the RDD graph at **shuffle boundaries**.
 - RDD operations with "narrow" dependencies, like map() and filter(), are pipelined together into one set of tasks in each stage operations with shuffle dependencies require multiple stages (one to write a set of map output files, and another to read those files after a barrier).
 - In the end, every stage will have only shuffle dependencies on other stages, and may compute multiple operations inside it. The actual pipelining of these operations happens in the `RDD.compute()` functions of various RDDs
 
+There are two types of tasks in Spark: `ShuffleMapTask` which partitions its input for shuffle and `ResultTask` which sends its output to the driver.The same applies to types of stages: `ShuffleMapStage` and `ResultStage` correspondingly.
 
+## shuffle
+
+During the shuffle `ShuffleMapTask` writes blocks to local drive, and then the task in the next stages fetches these blocks over the network.
+
+- Shuffle Write
+  - redistributes data among partitions and writes files to disk
+  - each *hash shuffle* task creates one file per “reduce” task (total = MxR)
+  - sort shuffle task creates one file with regions assigned to reducer
+  - sort shuffle uses in-memory sorting with spillover to disk to get final result
+- Shuffle Read
+  - fetches the files and applies reduce() logic
+  - if data ordering is needed then it is sorted on “reducer” side for any type of shuffle
 
 
 
