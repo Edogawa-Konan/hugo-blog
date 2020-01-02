@@ -4,7 +4,7 @@ date: 2019-12-05T15:11:09+08:00
 lastmod: 2019-12-05T15:11:09+08:00
 draft: false
 tags: ['剑指offer']
-categories: [’算法']
+categories: ['算法']
 ---
 
 # 剑指offer67道
