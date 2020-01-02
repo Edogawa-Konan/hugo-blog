@@ -2,8 +2,8 @@
 title: "Leetcode(39-76)"
 date: 2019-11-07T22:25:52+08:00
 draft: false
-tags: ["LeetCode"]
-categories: ["算法"]
+tags: ['LeetCode']
+categories: ['算法']
 ---
 
 # Leetcode(39-76)
