@@ -418,6 +418,43 @@ public List<Integer> spiralOrder(int[][] matrix) {
     }
 ```
 
+## 60-Permutation Sequence「排列」
+
+[Permutation Sequence](https://leetcode.com/problems/permutation-sequence/)
+
+>给定一个整数n和k，找到[1,2, 3……n]的第k个排列。
+
+考虑分治法，$n$个数可以分成$(n-1)!$个组，然后第一个数字的index可以表示为$k/(n-1)!$，$k\%(n-1)!$可以表示为对于剩下的$n-1$个数的index。
+
+```java
+public String getPermutation(int n, int k) {
+        List<Integer> nums = new LinkedList<>();  //保存所有的数字{1, 2, 3, 4...}
+        int[] factorial = new int[n];  //保存阶乘{1, 1, 2, 6, 24...}
+        StringBuilder sb = new StringBuilder();
+
+        factorial[0] = 1;
+        int sum = 1;
+        for(int i = 1; i<n; i++)
+        {
+            sum *= i;
+            factorial[i] = sum;
+        }
+
+        for(int i=1; i<=n; i++)
+            nums.add(i);
+        k--;
+
+        for(int i=n; i>0; i--)
+        {
+            int index = k / factorial[i-1];
+            k %= factorial[i-1];
+            sb.append(nums.get(index));
+            nums.remove(index);
+        }
+        return sb.toString();
+    }
+```
+
 ## 59-Spiral Matrix II「矩阵」
 
 [Spiral Matrix II](https://leetcode.com/problems/spiral-matrix-ii/)
@@ -623,6 +660,62 @@ public:
 
 ```
 
+## 66-Plus One「数组数字相加」
+
+[Plus One](https://leetcode.com/problems/plus-one/)
+
+> 给定一个非空数组，表示一个非负的数。返回+1之后的结果。
+
+其实就是处理进位。
+
+```java
+public int[] plusOne(int[] digits) {
+        int n = digits.length;
+        for (int i = n - 1; i >= 0; i--) {
+            if (digits[i] < 9) {
+                digits[i]++;
+                return digits;
+            }
+            else
+            {
+                digits[i] = 0;
+            }
+        }
+        int[] newDigits = new int[n+1];
+        newDigits[0] = 1;
+        return newDigits;
+    }
+```
+
+## 67-Add Binary「字符串数字相加」
+
+[Add Binary](https://leetcode.com/problems/add-binary/)
+
+>两个字符串表示二进制的两个数，求和之后返回结果（也是一个字符串）。
+
+直接从后往前计算即可，利用`carry`记录进位的情况。
+
+```java
+public String addBinary(String a, String b) {
+        int pa = a.length()-1, pb = b.length()-1;
+        int carry = 0;
+        StringBuilder sb = new StringBuilder();
+        while (pa>=0||pb>=0)
+        {
+            int sum = carry;
+            if(pa>=0)
+                sum += a.charAt(pa--) -'0';
+            if(pb>=0)
+                sum += b.charAt(pb--) - '0';
+            sb.append(sum%2);
+            carry = sum / 2;
+        }
+        if(carry>0)
+            sb.append(carry);
+        return sb.reverse().toString();
+    }
+```
+
 ## 70-Climbing Stairs「DP」
 
 [Climbing Stairs](https://leetcode.com/problems/climbing-stairs/)
@@ -743,6 +836,79 @@ a b c d e      a b c d e (add an "i")
           ->                           ->  dp[i][j-1] + 1 (for insertion)
 f g h          f g h i
 
+```
+
+## 73-Set Matrix Zeroes「矩阵」
+
+[Set Matrix Zeroes](https://leetcode.com/problems/set-matrix-zeroes/)
+
+>题目给定一个$m\times n$的矩阵，如果某个元素为0，则将该元素所在行和列都置为0。要求使用常量空间。
+
+很容易想到一种方法，利用两个数组，分别保存需要置为0的行和列。这样空间复杂度是$O(m+n)$。
+
+再进一步，考虑用原矩阵存储，即用矩阵的第一行来存储需要置为0的列，和第一列来存储需要置为0的行。需要设置两个符号位，记录第一行和第一列最后是否需要置为0.
+
+```java
+public void setZeroes(int[][] matrix) {
+        boolean firstRow = false, firstColumn = false;
+        for(int i=0; i<matrix.length; i++)
+            for(int j=0; j<matrix[0].length; j++)
+            {
+                if(matrix[i][j]==0)
+                {
+                    if(i==0) firstRow = true;
+                    if(j==0) firstColumn = true;
+                    matrix[0][j]=0;
+                    matrix[i][0]=0;
+                }
+            }
+        for(int i=1; i<matrix.length; i++)
+        {
+            for (int j = 1; j<matrix[i].length; j++)
+            {
+                if(matrix[i][0]==0||matrix[0][j]==0)
+                    matrix[i][j]=0;
+            }
+        }
+        if(firstRow)
+        {
+            for(int j=0; j<matrix[0].length; j++)
+                matrix[0][j]=0;
+        }
+        if(firstColumn)
+        {
+            for(int i=0; i<matrix.length; i++)
+                matrix[i][0]=0;
+        }
+    }
+```
+
+## 74-Search a 2D Matrix「二分查找」
+
+[Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/)
+
+>给定一个有序二维矩阵，查找指定元素是否存在。
+
+一想到有序的查找，直接二分查找！
+
+```java
+public boolean searchMatrix(int[][] matrix, int target) {
+        if(matrix.length==0)
+            return false;
+        int m = matrix.length, n = matrix[0].length;
+        int low = 0, high = m*n - 1;
+        while (low<=high)
+        {
+            int mid = (low+high) / 2;
+            if(matrix[mid/n][mid%n]>target)
+                high = mid-1;
+            else if(matrix[mid/n][mid%n]<target)
+                low = mid+1;
+            else
+                return true;
+        }
+        return false;
+    }
 ```
 
 ## 75-Sort Colors「排序」
