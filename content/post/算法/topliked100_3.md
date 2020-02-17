@@ -170,32 +170,7 @@ public static class TreeNode {
     }
 ```
 
-## 238-Product of Array Except Self「数组」
 
-[Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/)
-
-> 给定一个数组，要求返回一个数组，每个元素等于原数组除对应元素外其它所有元素的乘积。
-
-先用一个数组记录累积，`product[i]`记录着从`nums[0]`到`nums[i-1]`的乘积。然后再从数组右侧开始遍历，用一个元素记录累积，这样就可以把当前元素`nums[i]`空出来了。
-
-```java
-public int[] productExceptSelf(int[] nums) {
-        int[] product = new int[nums.length];
-        product[0] = 1;
-
-        for(int i = 1; i<nums.length; i++)
-        {
-            product[i] = product[i-1] * nums[i-1];
-        }
-        int right = 1;
-        for(int i = nums.length-1; i>=0; i--)
-        {
-            product[i] = product[i] * right;
-            right = right * nums[i];
-        }
-        return product;
-    }
-```
 
 ## 240-Search a 2D Matrix II「查找」
 

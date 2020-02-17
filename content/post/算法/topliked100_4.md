@@ -154,44 +154,7 @@ public int subarraySum(int[] nums, int k) {
     }
 ```
 
-## 581-Shortest Unsorted Continuous Subarray[两个指针]
 
-[Shortest Unsorted Continuous Subarray](https://leetcode.com/problems/shortest-unsorted-continuous-subarray/)
-
->给定一个数组，找到一个连续子数组，如果这个子数组升序排序，那么整个数组升序有序。
-
-采用两个指针，直接前后开始找子数组的起点和终点这种方式不可行。比如：
-
-```
-Input: [2, 6, 4, 8, 10, 9, 15]
-Output: 5
-Explanation: You need to sort [6, 4, 8, 10, 9] in ascending order to make the whole array sorted in ascending order.
-```
-
-这里应该从6开始，而不是从4开始。
-
-转换一下思路，从数组最后向前扫描，找到起点；从数组开始向后扫描，找到终点。
-
-```java
-public int findUnsortedSubarray(int[] nums) {
-        int start=-1, end = -1;
-        int max = nums[0], min = nums[nums.length-1];
-        for(int i =1; i<nums.length; i++)
-        {
-            max = Math.max(nums[i], max); // 数组前部分最大值
-            min = Math.min(nums[nums.length-1-i], min); //数组后面的而最小值
-            if(nums[i] < max)
-            {
-                end = i;
-            }
-            if(nums[nums.length-1-i]>min)
-                start = nums.length-1-i;
-        }
-        if(start==-1&&end==-1)
-            return 0;
-        return end - start + 1;
-    }
-```
 
 ## 647-Palindromic Substrings「回文串/技巧型」
 

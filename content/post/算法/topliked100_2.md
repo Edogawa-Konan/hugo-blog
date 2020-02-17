@@ -109,55 +109,7 @@ public:
 };
 ```
 
-##  138-Copy List with Random Pointer「链表」
 
-[Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/)
-
-深拷贝链表，关键在于random字段的填充。
-
-采取一个比较简单的思路，第一次遍历用一个map保存**原结点-新结点**的对，然后第二次遍历填充next和random字段。
-
-```c++
-class Node {
-public:
-    int val;
-    Node* next;
-    Node* random;
-
-    Node() {}
-
-    Node(int _val, Node* _next, Node* _random) {
-        val = _val;
-        next = _next;
-        random = _random;
-    }
-};
-
-class Solution {
-public:
-    Node* copyRandomList(Node* head) {
-        unordered_map<Node*, Node*> mm;
-        Node* p = head;
-        while (p)
-        {
-            mm[p] = new Node(p->val, nullptr, nullptr);
-            p = p->next;
-        }
-
-        p = head;
-        while (p){
-            mm[p]->next = mm[p->next];
-            mm[p]->random = mm[p->random];
-            p = p->next;
-        }
-        return mm[head];
-    }
-};
-```
-
----
-
-**ps: map用[]访问不到，会插入元素**
 
 ## 139-Word Break「DP」
 
@@ -193,75 +145,6 @@ public:
 };
 ```
 
-## 141-Linked List Cycle「链表」
-
-[Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/)
-
-判断链表是否有环。
-
-O(1)的方法，设置两个指针，一个走两步，一个走一步，如果有环它们终会回合，否则就是走到空指针循环结束。
-
-```c++
-struct ListNode {
-    int val;
-    ListNode *next;
-
-    explicit ListNode(int x) : val(x), next(nullptr) {}
-};
-
-
-class Solution {
-public:
-    bool hasCycle(ListNode *head) {
-        if(head == nullptr)
-            return false;
-        ListNode* one = head;
-        ListNode* two = head;
-        while (two->next && two->next->next)
-        {
-            one = one->next;
-            two = two->next->next;
-            if(one == two)
-                return true;
-        }
-        return false;
-    }
-};
-```
-
-## 142-Linked List Cycle II[两个指针]
-
-[Linked List Cycle II](https://leetcode.com/problems/linked-list-cycle-ii/)
-同上一题，不过需要返回环开始的结点。解法也类似。
-设$A$表示起点到环开始结点的距离，$B$为环开始结点到第一次相遇的距离，$N$表示环的长度。则有$2A+2B-(A+B)=A+B=N$。
-因此找到第一次相遇的结点后，让慢指针继续走同时头结点再开始一个慢指针，它们相遇的结点即是环的开始。
-
-```c++
-class Solution {
-public:
-    ListNode *detectCycle(ListNode *head) {
-        if(head == nullptr)
-            return nullptr;
-        ListNode *one = head, *two = head;
-        while (two && two->next)
-        {
-            one = one->next;
-            two = two->next->next;
-            if(one == two)
-            {
-                ListNode* one2 = head;
-                while(one != one2)
-                {
-                    one = one->next;
-                    one2 = one2->next;
-                }
-                return one2;
-            }
-        }
-        return nullptr;
-    }
-};
-```
 
 ## 146-LRU Cache[链表+map]
 
@@ -318,96 +201,7 @@ public:
 };
 ```
 
-## 148-Sort List[归并排序]
 
-[Sort List](https://leetcode.com/problems/sort-list/)
-
-对链表进行排序，要求O(nlogn)的时间复杂度且用常量的空间复杂度。
-
-考虑使用迭代版归并排序（不使用递归是因为递归本身需要用栈，不是常量空间）。
-
-```c++
-struct ListNode {
-    int val;
-    ListNode *next{};
-
-    explicit ListNode(int x) : val(x), next(nullptr) {}
-};
-class Solution {
-private:
-    ListNode *split(ListNode*head, int n)
-    {//从head中取前n个结点，返回剩下的链表的首结点指针
-        for(int i=1; head&&i<n; i++)
-            head = head->next;
-        if(!head)
-            return nullptr;
-        else
-        {
-            ListNode* second = head->next;
-            head->next = nullptr;
-            return second;
-        }
-    }
-    ListNode *merge(ListNode*left, ListNode*right, ListNode*tail)
-    {//把left和right链表按顺序追加到tail尾部，最后返回链表尾部的指针
-        ListNode * cur = tail;
-        while (left&&right)
-        {
-            if(left->val < right->val )
-            {
-                cur->next = left;
-                cur = left;
-                left=left->next;
-            } else{
-                cur->next = right;
-                cur = right;
-                right = right->next;
-            }
-        }
-        while (left)
-        {
-            cur->next = left;
-            cur = left;
-            left = left->next;
-        }
-        while (right)
-        {
-            cur->next = right;
-            cur = right;
-            right = right->next;
-        }
-        return cur;
-    }
-public:
-    ListNode *sortList(ListNode *head) {
-        if(!head || !(head->next)) return head;
-		//先求链表长度
-        ListNode* p = head;
-        int length = 0;
-        while(p)
-        {
-            length++;
-            p=p->next;
-        }
-        ListNode dummy(0);//增加一个头结点便于插入
-        dummy.next = head;
-        ListNode *left, *right, *tail, *cur;
-        for(int step = 1; step<length; step*=2)
-        {
-            cur = dummy.next; 
-            tail = &dummy;
-            while(cur)
-            {
-                left = cur;
-                right = split(left, step);
-                cur = split(right, step);
-                tail = merge(left, right, tail);
-            }
-        }
-        return dummy.next;
-    }
-};
-```
 
 ## 152-Maximum Product Subarray
 
@@ -490,41 +284,7 @@ public:
 };
 ```
 
-## 160-Intersection of Two Linked Lists「两个指针」
 
-[Intersection of Two Linked Lists](https://leetcode.com/problems/intersection-of-two-linked-lists/)
-
-找到两个链表相交的开始阶段，不相交返回null。
-
-和141相似，同样设置两个指针。假设链表1起点到相交结点的距离为A，链表2起点到相交结点距离为B，两个链表重合部分长度为C。
-
-基本想法是：两个指针p、q分别从链表1、2起点开始，每次走一步。如果其中一个到了结尾（为null），则让其从另一个链表的头部开始。
-
-显然，如果两个链表相交，则两个指针第二圈一定会重合，重合的地方就是开始的地方（都走了$A+B+C$的长度）。如果没有相交，最后它们都会走到结尾，为null，因为都走了$A+B+2C$的长度。
-
-```c++
-struct ListNode {
-         int val;
-         ListNode *next;
-         explicit ListNode(int x) : val(x), next(nullptr) {}
-     };
-
-
-class Solution {
-public:
-    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
-        ListNode *p=headA, *q=headB;
-        while (p!=q)
-        {
-            p = p?p->next:headB;
-            q = q?q->next:headA;
-        }
-        return p;
-    }
-};
-```
-
-PS:`nullptr==nullptr`为true。
 
 ## 169-Majority Element「莫尔投票法」
 
