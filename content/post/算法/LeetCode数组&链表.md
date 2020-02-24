@@ -170,6 +170,50 @@ public void merge(int[] nums1, int m, int[] nums2, int n) {
     }
 ```
 
+## 92. Reverse Linked List II「四个指针」
+
+[Reverse Linked List II](https://leetcode.com/problems/reverse-linked-list-ii/)
+
+>给定一个链表，反转其从m到n的结点。要求一遍遍历。
+
+采取逻辑上比较简单的思路，即把待反转的子链表通过插入新链表的方式反转，再拼接。
+
+```java
+public static class ListNode {
+        int val;
+        ListNode next;
+
+        ListNode(int x) {
+            val = x;
+        }
+    }
+    public ListNode reverseBetween(ListNode head, int m, int n) {
+        ListNode dummy = new ListNode(0), rev_dummy = new ListNode(0);  //反转子链表的头结点
+        ListNode rev_end = null;  //指向反转后的最后一个结点
+        dummy.next = head;
+        ListNode fast = head, slow = dummy;
+        for(int index = 1; index<=n; index++)
+        {
+            if(index < m)
+            {
+                fast = fast.next;
+                slow = slow.next;
+            }
+            else{
+                if(index == m)
+                    rev_end = fast;
+                ListNode tmp = fast;
+                fast = fast.next;
+                tmp.next = rev_dummy.next;
+                rev_dummy.next = tmp;
+            }
+        }
+        slow.next = rev_dummy.next;
+        rev_end.next = fast;
+        return dummy.next;
+    }
+```
+
 ##  138-Copy List with Random Pointer「链表」
 
 [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/)
