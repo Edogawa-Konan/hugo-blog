@@ -226,7 +226,6 @@ public:
         return G[n];
     }
 };
-
 ```
 
 ## 98-Validate Binary Search Tree「中序遍历」
