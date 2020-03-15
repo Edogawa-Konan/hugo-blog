@@ -120,8 +120,6 @@ static public class TreeNode {
     }
 ```
 
-
-
 ## 109.  Convert Sorted List to Binary Search Tree[重建BST树]
 
 [ Convert Sorted List to Binary Search Tree](https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/)
@@ -168,6 +166,232 @@ static public class TreeNode {
         return root;
     }
 ```
+
+## 110. Balanced Binary Tree「DFS」
+
+[Balanced Binary Tree](https://leetcode.com/problems/balanced-binary-tree/)
+
+>Given a binary tree, determine if it is height-balanced.
+>
+>For this problem, a height-balanced binary tree is defined as:
+>
+>a binary tree in which the left and right subtrees of *every* node differ in height by no more than 1.
+
+判断平衡二叉树的问题，显然最简单的方法就是复用求高度的方法，但是如果直接用这样的话，时间复杂度是$O(n^2)$。显然这是不够好的。
+
+一直可能的优化是将判断逻辑放入求高度的过程中。
+
+```java
+ static public class TreeNode {
+      int val;
+      TreeNode left;
+      TreeNode right;
+      TreeNode(int x) { val = x; }
+    }
+
+    private boolean isbalance = true;
+
+    public boolean isBalanced(TreeNode root) {
+        if (root==null)
+            return true;
+        if (Math.abs(getTreeHeight(root.left) - getTreeHeight(root.right)) > 1)
+            return false;
+        else
+            return isBalanced(root.left) && isBalanced(root.right);
+    }
+
+    public int getTreeHeight(TreeNode root)
+    {//未优化的版本
+        if (root==null)
+            return 0;
+        return Math.max(getTreeHeight(root.left), getTreeHeight(root.right)) + 1;
+    }
+
+    public boolean isBalanced2(TreeNode root)
+    {
+        getTreeHeight2(root);
+        return isbalance;
+    }
+
+    public int getTreeHeight2(TreeNode root)
+    {// 利用类变量isbalance标示
+        if (root==null)
+            return 0;
+        int left = getTreeHeight2(root.left);
+        int right = getTreeHeight2(root.right);
+        if (Math.abs(left - right) > 1)
+            isbalance = false;
+        return Math.max(left, right) + 1;
+    }
+```
+
+## 111. Minimum Depth of Binary Tree「DFS」
+
+[Minimum Depth of Binary Tree](https://leetcode.com/problems/minimum-depth-of-binary-tree/)
+
+>Given a binary tree, find its minimum depth.
+>
+>The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.
+>
+>**Note:** A leaf is a node with no children.
+
+```java
+public int minDepth(TreeNode root) {
+        if (root==null)
+            return 0;
+        int left = minDepth(root.left);
+        int right = minDepth(root.right);
+        if (left == 0 || right == 0)  // 有一个子树为空的时候，不能用min的方式，否则可能这个结点不是叶子但是返回0了
+            return left + right + 1;
+        else
+            return Math.min(left, right) + 1;
+
+    }
+```
+
+## 112. Path Sum「DFS」
+
+[Path Sum](https://leetcode.com/problems/path-sum/)
+
+>Given a binary tree and a sum, determine if the tree has a root-to-leaf path such that adding up all the values along the path equals the given sum.**Note:** A leaf is a node with no children.
+
+```java
+public boolean hasPathSum(TreeNode root, int sum) {
+        if (root==null)
+            return false;
+        else
+        {
+            if (root.val == sum && root.left == null && root.right == null)
+                return true;
+            return hasPathSum(root.left, sum - root.val) || hasPathSum(root.right, sum - root.val);
+        }
+
+    }
+```
+
+## 113. Path Sum II「DFS」
+
+[Path Sum II](https://leetcode.com/problems/path-sum-ii/)
+
+>Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum.**Note:** A leaf is a node with no children.
+
+```java
+static public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+        TreeNode(int x) {
+            val = x;
+        }
+    }
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        List<List<Integer>> res = new LinkedList<>();
+        DFS(root, sum, new ArrayList<>(), res);
+        return res;
+    }
+    public void DFS(TreeNode root, int sum, List<Integer> path, List<List<Integer>> result)
+    {
+        if (root == null)
+            return;
+        path.add(root.val);
+        if (root.val == sum && root.left == null && root.right == null)
+            result.add(new ArrayList<>(path));
+        DFS(root.left, sum - root.val, path, result);
+        DFS(root.right, sum - root.val, path, result);
+        path.remove(path.size() - 1);
+    }
+```
+
+## 116. Populating Next Right Pointers in Each Node「层序遍历」
+
+[Populating Next Right Pointers in Each Node](https://leetcode.com/problems/populating-next-right-pointers-in-each-node/)
+
+>给定一个完全二叉树，要求填写其中的`next`指针。比如下图：
+>
+>![](https://assets.leetcode.com/uploads/2019/02/14/116_sample.png)
+
+显然，这是一个层序遍历问题，但是不一定非要用队列。。因为完全二叉树，一直向左孩子前进即可进入下一层，同时对该层层序遍历填充`next`域。
+
+```java
+static class Node {
+        public int val;
+        public Node left;
+        public Node right;
+        public Node next;
+
+        public Node() {}
+
+        public Node(int _val) {
+            val = _val;
+        }
+
+        public Node(int _val, Node _left, Node _right, Node _next) {
+            val = _val;
+            left = _left;
+            right = _right;
+            next = _next;
+        }
+    };
+    public Node connect(Node root) {
+        if (root ==  null)
+            return root;
+        Node pre = root;// 一直向树的最左孩子遍历
+        Node cur = null;
+        while (pre.left != null)
+        {//进入下一层的循环
+            cur = pre;
+            while (cur!=null)
+            {// 通过next进行该层平移
+                cur.left.next = cur.right;
+                if (cur.next!=null)
+                {
+                    cur.right.next = cur.next.left;
+                }
+                cur = cur.next;
+            }
+            pre = pre.left;
+        }
+        return root;
+    }
+```
+
+## 117. Populating Next Right Pointers in Each Node II「层序遍历」
+
+[Populating Next Right Pointers in Each Node II](https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/)
+
+>同上一题，只不过不保证是个完全二叉树。
+
+显然，需要检查子树的存在性。之前的每次由左子树进入下一层的方法不再适用。考虑使用层序遍历，但是不算使用队列，因为目的是链接，因此更像是链表的操作。
+
+```java
+public Node connect(Node root) {
+        Node res = root;
+        Node dummy = new Node(0);
+        while (root != null)
+        {//树的层序遍历
+            Node cur = dummy; // 用一个临时结点，作为每一层"链表"的头结点。
+            while (root != null)
+            {//遍历该层
+                if (root.left != null)
+                {
+                    cur.next = root.left;
+                    cur = cur.next;
+                }
+                if (root.right != null)
+                {
+                    cur.next = root.right;
+                    cur = cur.next;
+                }
+                root = root.next;
+            }
+            root = dummy.next;
+            dummy.next = null;
+        }
+        return res;
+    }
+```
+
+
 
 
 
