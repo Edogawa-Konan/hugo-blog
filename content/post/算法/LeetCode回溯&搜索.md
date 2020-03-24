@@ -74,3 +74,108 @@ public List<String> restoreIpAddresses(String s) {
 
 ```
 
+## 130. Surrounded Regions「DFS」
+
+[Surrounded Regions](https://leetcode.com/problems/surrounded-regions/)
+
+>简单描述为，将不在边上的O填成X，类似于围棋。与边界O相邻的如果也是O，也不能被替换。
+
+可以对“棋盘”的边上的每个`O`开始DFS，填充相邻的`O`为`1`，然后将整个矩阵所有的`O`填成`X`，再把`1`还原成`O`。
+
+```java
+public void solve(char[][] board) {
+        if(board.length == 0)
+            return;
+        int m = board.length, n = board[0].length;
+        for (int i = 0; i<m; i++)
+        {
+            if(board[i][0] == 'O')
+                DFS(board, i, 0);
+            if(board[i][n-1] == 'O')
+                DFS(board, i, n-1);
+        }
+        for(int j = 0;j <n;j++)
+        {
+            if(board[0][j]=='O')
+                DFS(board, 0, j);
+            if(board[m-1][j]=='O')
+                DFS(board, m-1, j);
+        }
+        for (int i = 0; i<m; i++)
+        {
+            for(int j = 0;j<n; j++)
+            {
+                if(board[i][j]=='O')
+                    board[i][j] = 'X';
+            }
+        }
+        for (int i = 0; i<m; i++)
+        {
+            for(int j = 0;j<n; j++)
+            {
+                if(board[i][j]=='1')
+                    board[i][j] = 'O';
+            }
+        }
+    }
+
+    void DFS(char[][] board, int i, int j) {
+        if (board[i][j] == 'O')
+            board[i][j] = '1';
+        if (i + 1 < board.length && board[i + 1][j] == 'O')
+            DFS(board, i + 1, j);
+        if (i - 1 >= 0 && board[i - 1][j] == 'O')
+            DFS(board, i - 1, j);
+        if (j + 1 < board[0].length && board[i][j + 1] == 'O')
+            DFS(board, i, j + 1);
+        if (j - 1 >= 0 && board[i][j - 1] == 'O')
+            DFS(board, i, j - 1);
+    }
+```
+
+
+
+## 131. Palindrome Partitioning「回溯」
+
+[Palindrome Partitioning](https://leetcode.com/problems/palindrome-partitioning/)
+
+>Given a string *s*, partition *s* such that every substring of the partition is a palindrome.
+>
+>Return all possible palindrome partitioning of *s*.
+
+采用求子集相同的代码思路，只不过把回文考虑进去。
+
+```java
+public List<List<String>> partition(String s) {
+        List<String> path = new ArrayList<>();
+        List<List<String>> res = new ArrayList<>();
+        DFS(s, 0, path, res);
+        return res;
+    }
+
+    void DFS(String s , int pos, List<String> path, List<List<String>> res)
+    {
+        if(pos==s.length())
+        {
+            res.add(new ArrayList<>(path));
+        }
+        for(int i = pos; i<s.length(); i++)
+        {
+            if(isPalindrome(s, pos, i))
+            {
+                path.add(s.substring(pos, i+1));
+                DFS(s, i+1, path, res);
+                path.remove(path.size() -1 );
+            }
+        }
+    }
+
+    public boolean isPalindrome(String s, int start, int end)
+    {
+        while (start < end)
+            if (s.charAt(start++) != s.charAt(end--))
+                return false;
+        return true;
+    }
+```
+
